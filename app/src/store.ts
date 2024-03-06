@@ -18,6 +18,10 @@ import {
 import {
   UartClient
 } from "re-uart";
+import {
+  receivedReadResponse,
+  ReadResponseEvent,
+} from "src/hardware_client_manager";
 
 const DEFAULT_DATA_WIDTH = 32;
 const DEFAULT_DEFAULT_RESET = "Default";
@@ -55,15 +59,13 @@ export const useStore = defineStore("store", {
       loadError: null as string | null,
 
       hwClient: new UartClient(
-          (addr: number, data: number) => {
-              // TODO: update register model
-              const message = "receivedReadRequest:0x" + addr.toString(16).padStart(8, "0") + ":0x" + data.toString(16).padStart(8, "0");
-              console.log(message);
-          },
-          (message) => {
-              console.log(message);
-          },
+        receivedReadResponse,
+        (message: string) => {
+          console.log(message);
+        },
       ),
+
+      lastReceivedReadResponse: null as ReadResponseEvent | null,
     };
   },
   actions: {
@@ -154,6 +156,18 @@ export const useStore = defineStore("store", {
       this.loaded = true;
       this.root = data.root;
       this.url = url;
+    },
+
+
+    findRegByAddr (
+      bigAddr: bigInt.BigInteger,
+    ): DesignElement | undefined {
+      for (const element of this.elements.values()) {
+        if (element.type == "reg" && element?.addr?.equals(bigAddr)) {
+          return element;
+        }
+      }
+      return undefined;
     },
   },
 });

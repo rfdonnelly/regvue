@@ -170,6 +170,22 @@ watch(
     });
   }
 );
+
+// Update displayed value if we receive a read response for current register
+watch(
+  () => store.lastReceivedReadResponse,
+  () => {
+    const id = (route.params.elementId as string[]).join(".");
+    const element_addr = store.elements.get(id)?.addr;
+    const response_addr = store.lastReceivedReadResponse?.addr;
+
+    if (response_addr && element_addr?.equals(response_addr)) {
+      updateRegisterValue();
+      fieldKeyIndex.value += 1;
+      registerKeyIndex.value += 1;
+    }
+  }
+);
 </script>
 
 <template>
