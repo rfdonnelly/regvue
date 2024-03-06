@@ -39,6 +39,7 @@ const root = computed(() => store.root);
 
 // Control whether or not to show the open modal
 let showOpenModal = ref(false);
+const isConnected = ref(false);
 
 let element = computed(() => {
   if (elementId.value == "") {
@@ -122,6 +123,23 @@ const toggleMenu = () => {
   }
 };
 
+const connect = async () => {
+  isConnected.value = true;
+  try {
+    await store.hwClient.connect();
+  } catch {
+    isConnected.value = false;
+  }
+};
+
+const disconnect = async () => {
+  try {
+    await store.hwClient.disconnect();
+  } finally {
+    isConnected.value = false;
+  }
+};
+
 // Automatically hide/show the menu if the window width crosses the breakpoint
 watch(
   () => windowWidth.value,
@@ -149,6 +167,8 @@ watch(
     class="h-11"
     @show-open-modal="showOpenModal = true"
     @toggle-menu="toggleMenu()"
+    @connect="connect()"
+    @disconnect="disconnect()"
   />
 
   <OpenModal v-if="showOpenModal" @hide-open-modal="showOpenModal = false" />

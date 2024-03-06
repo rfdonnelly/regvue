@@ -2,8 +2,8 @@
 import { ref, Ref, nextTick, onBeforeMount, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Bit, DataWidth, DisplayType, Field, Swap } from "src/types";
-import { stringToBitArray } from "src/parse";
-import { valueToFields, fieldsToValue } from "src/format";
+import { stringToBitArray, parseBigInt } from "src/parse";
+import { bitArrayToString, valueToFields, fieldsToValue } from "src/format";
 import { useStore } from "src/store";
 
 import FieldInputBox from "src/components/FieldInputBox.vue";
@@ -23,6 +23,8 @@ const emit = defineEmits([
   "highlight-field",
   "stop-highlight-field",
   "select-reset-state",
+  "perform-write-access",
+  "perform-read-access",
 ]);
 
 const store = useStore();
@@ -64,6 +66,14 @@ const toggleByteSwap = () => {
 
   updateRegisterValue();
   registerKeyIndex.value += 1;
+};
+
+const performWriteAccess = async () => {
+  emit("perform-write-access", parseBigInt(bitArrayToString(registerValue.value, "hexadecimal")));
+};
+
+const performReadAccess = async () => {
+  emit("perform-read-access");
 };
 
 // Toggles the useWordSwap variable and forces a reload/recalculate
@@ -362,6 +372,7 @@ watch(
               id="write-button"
               class="active:text-shadow rounded-l border border-gray-400 px-1 shadow hover:cursor-pointer active:bg-gray-200 active:text-green-700"
               title="Perform a register write"
+              @click="performWriteAccess()"
             >
               Wr
             </button>
@@ -369,6 +380,7 @@ watch(
               id="read-button"
               class="active:text-shadow rounded-r border border-gray-400 px-1 shadow hover:cursor-pointer active:bg-gray-200 active:text-green-700"
               title="Perform a register read"
+              @click="performReadAccess()"
             >
               Rd
             </button>

@@ -15,6 +15,9 @@ import {
   validateSemantics,
   validateResponse,
 } from "src/validate";
+import {
+  UartClient
+} from "re-uart";
 
 const DEFAULT_DATA_WIDTH = 32;
 const DEFAULT_DEFAULT_RESET = "Default";
@@ -50,6 +53,17 @@ export const useStore = defineStore("store", {
       // Persist any load errors during routing
       // Clear on load, set on load error
       loadError: null as string | null,
+
+      hwClient: new UartClient(
+          (addr: number, data: number) => {
+              // TODO: update register model
+              const message = "receivedReadRequest:0x" + addr.toString(16).padStart(8, "0") + ":0x" + data.toString(16).padStart(8, "0");
+              console.log(message);
+          },
+          (message) => {
+              console.log(message);
+          },
+      ),
     };
   },
   actions: {

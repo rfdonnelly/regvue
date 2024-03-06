@@ -75,6 +75,23 @@ const selectDefaultReset = (resetState: string) => {
   elem.resets.unshift(resetState);
   regLayoutKey.value += 1;
 };
+
+const performWriteAccess = async (data: bigInt.BigInteger) => {
+  const addrBigInt = props.reg.addr;
+  if (addrBigInt) {
+    const addrInt = parseInt(addrBigInt.toString());
+    const dataInt = parseInt(data.toString());
+    await store.hwClient.write(addrInt, dataInt);
+  }
+};
+
+const performReadAccess = async () => {
+  const addrBigInt = props.reg.addr;
+  if (addrBigInt) {
+    const addrInt = parseInt(addrBigInt.toString());
+    await store.hwClient.read(addrInt);
+  }
+};
 </script>
 
 <template>
@@ -94,6 +111,8 @@ const selectDefaultReset = (resetState: string) => {
       @highlight-field="highlightField"
       @stop-highlight-field="stopHighlightField"
       @select-reset-state="selectDefaultReset($event)"
+      @perform-write-access="performWriteAccess"
+      @perform-read-access="performReadAccess"
     />
 
     <!-- Show the register doc description -->

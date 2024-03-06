@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "src/store";
 
 import Search from "src/components/Search.vue";
 
 import FileReplaceOutline from "vue-material-design-icons/FileReplaceOutline.vue";
+import Connection from "vue-material-design-icons/Connection.vue";
 
-const emit = defineEmits(["toggle-menu", "show-open-modal"]);
+const emit = defineEmits([
+    "toggle-menu", "show-open-modal",
+    "connect", "disconnect"]);
 
 const store = useStore();
 const route = useRoute();
@@ -24,6 +27,7 @@ const version = computed(() => {
 });
 
 const links = computed(() => store.root?.links);
+const connected = ref(false);
 
 const getHomeLink = () => {
   return router.resolve({
@@ -80,6 +84,20 @@ watch(
             id="show-open-modal-button"
             class="text-gray-600"
             title="Open a new design file"
+          />
+        </button>
+        <button>
+          <connection
+            v-if="!connected"
+            fillColor="green"
+            @click="emit('connect'); connected = !connected;"
+            title="Connect"
+          />
+          <connection
+            v-if="connected"
+            fillColor="red"
+            @click="emit('disconnect'); connected = !connected;"
+            title="Disconnect"
           />
         </button>
       </div>
