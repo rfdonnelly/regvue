@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onUnmounted } from "vue";
+import { computed, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "src/store";
 
@@ -27,7 +27,6 @@ const version = computed(() => {
 });
 
 const links = computed(() => store.root?.links);
-const connected = ref(false);
 
 const getHomeLink = () => {
   return router.resolve({
@@ -88,15 +87,15 @@ watch(
         </button>
         <button>
           <connection
-            v-if="!connected"
+            v-if="!store.hwClient.isConnected"
             fillColor="green"
-            @click="emit('connect'); connected = !connected;"
+            @click="emit('connect')"
             title="Connect"
           />
           <connection
-            v-if="connected"
+            v-if="store.hwClient.isConnected"
             fillColor="red"
-            @click="emit('disconnect'); connected = !connected;"
+            @click="emit('disconnect');"
             title="Disconnect"
           />
         </button>

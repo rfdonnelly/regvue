@@ -16,10 +16,7 @@ import {
   validateResponse,
 } from "src/validate";
 import {
-  UartClient
-} from "re-uart";
-import {
-  receivedReadResponse,
+  HardwareClientManager,
   ReadResponseEvent,
 } from "src/hardware_client_manager";
 
@@ -58,13 +55,7 @@ export const useStore = defineStore("store", {
       // Clear on load, set on load error
       loadError: null as string | null,
 
-      hwClient: new UartClient(
-        receivedReadResponse,
-        (message: string) => {
-          console.log(message);
-        },
-      ),
-
+      hwClient: new HardwareClientManager(),
       lastReceivedReadResponse: null as ReadResponseEvent | null,
     };
   },
