@@ -380,10 +380,12 @@ watch(
         </div>
 
         <!-- Access buttons -->
-        <div>
+        <div
+          v-if="store.hwClient.isConnected"
+        >
           <div class="text-right text-sm text-gray-500">Access</div>
 
-          <div>
+          <div class="flex flex-row">
             <button
               id="write-button"
               class="active:text-shadow rounded-l border border-gray-400 px-1 shadow hover:cursor-pointer active:bg-gray-200 active:text-green-700"
