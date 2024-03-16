@@ -3,9 +3,7 @@ import bigInt from "big-integer";
 import { Bit } from "src/types";
 import { stringToBitArray } from "src/parse";
 import { valueToFields } from 'src/format'
-import {
-  UartClient
-} from "re-uart";
+import { RegvueHardwareClientInterface } from 'regvue-hardware-client-interface';
 
 export interface ReadResponseEvent {
   addr: bigInt.BigInteger;
@@ -13,43 +11,69 @@ export interface ReadResponseEvent {
 }
 
 export class HardwareClientManager {
-  adapter: UartClient;
+  adapter: RegvueHardwareClientInterface | null;
   isConnected: boolean;
+  isLoaded: boolean;
 
   constructor() {
-    this.adapter = new UartClient(
+    this.adapter = null;
+    this.isConnected = false;
+    this.isLoaded = false;
+  }
+
+  async connect() {
+    if (this.adapter) {
+      try {
+        await this.adapter.connect();
+        this.isConnected = true;
+      } catch {
+        // Ignore
+      }
+    }
+  }
+
+  async disconnect() {
+    if (this.adapter) {
+      try {
+        await this.adapter.disconnect();
+      } finally {
+        this.isConnected = false;
+      }
+    }
+  }
+
+  async write(addr: number, data: number) {
+    if (this.adapter) {
+      await this.adapter.write(addr, data);
+    }
+  }
+
+  async read(addr: number) {
+    if (this.adapter) {
+      await this.adapter.read(addr);
+    }
+  }
+
+  async load(url: string) {
+    const absUrl = this.urlMakeAbsolute(url);
+    const { HardwareClient } = await import(/*@vite-ignore*/ absUrl);
+    this.adapter = new HardwareClient(
       this.receivedReadResponse,
       (message: string) => {
         console.log(message);
       },
     );
-
-    this.isConnected = false;
+    this.isLoaded = true;
   }
 
-  async connect() {
-    try {
-      await this.adapter.connect();
-      this.isConnected = true;
-    } catch {
-      // Ignore
-    }
+  unload() {
+    this.disconnect();
+    this.adapter = null;
+    this.isLoaded = false;
   }
 
-  async disconnect() {
-    try {
-      await this.adapter.disconnect();
-    } finally {
-      this.isConnected = false;
-    }
-  }
-
-  async write(addr: number, data: number) {
-    await this.adapter.write(addr, data);
-  }
-
-  async read(addr: number) {
-    await this.adapter.read(addr);
+  urlMakeAbsolute(url: string): string {
+    return new URL(url, document.baseURI).href;
   }
 
   receivedReadResponse(addr: number, data: number) {

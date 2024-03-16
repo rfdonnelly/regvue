@@ -85,7 +85,9 @@ watch(
             title="Open a new design file"
           />
         </button>
-        <button>
+        <button
+          v-if="store.hwClient.isLoaded"
+        >
           <connection
             v-if="!store.hwClient.isConnected"
             fillColor="green"

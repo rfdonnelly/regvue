@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, RouteLocationNormalized } from "vue-router";
 import { useStore } from "src/store";
 import ElementView from "src/views/ElementView.vue";
 import PageNotFound from "src/views/PageNotFound.vue";
@@ -63,7 +63,32 @@ router.beforeEach(async (to) => {
     }
   }
 
-  return;
+  return true;
+});
+
+function hasQueryParam(route: RouteLocationNormalized, param: string): boolean {
+  return Object.hasOwn(route.query, param);
+}
+
+router.beforeEach(async (to, from) => {
+  const store = useStore();
+
+  const adapter = from.query.adapter || to.query.adapter;
+
+  if (adapter) {
+    if (!store.hwClient.isLoaded) {
+      await store.hwClient.load(adapter as string);
+    }
+  } else {
+    store.hwClient.unload();
+  }
+
+  // Preserve adapter query param
+  if (hasQueryParam(from, "adapter") && !hasQueryParam(to, "adapter")) {
+    return {...to, query: {...to.query, adapter: from.query.adapter}};
+  }
+
+  return true;
 });
 
 export default router;
