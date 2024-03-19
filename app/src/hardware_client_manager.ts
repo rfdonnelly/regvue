@@ -56,14 +56,18 @@ export class HardwareClientManager {
 
   async load(url: string) {
     const absUrl = this.urlMakeAbsolute(url);
-    const { HardwareClient } = await import(/*@vite-ignore*/ absUrl);
-    this.adapter = new HardwareClient(
-      this.receivedReadResponse,
-      (message: string) => {
-        console.log(message);
-      },
-    );
-    this.isLoaded = true;
+    try {
+      const { HardwareClient } = await import(/*@vite-ignore*/ absUrl);
+      this.adapter = new HardwareClient(
+        this.receivedReadResponse,
+        (message: string) => {
+          console.log(message);
+        },
+      );
+      this.isLoaded = true;
+    } catch {
+      this.unload();
+    }
   }
 
   unload() {
