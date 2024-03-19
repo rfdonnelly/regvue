@@ -86,15 +86,15 @@ watch(
           />
         </button>
         <button
-          v-if="store.hwClient.isLoaded"
+          v-if="store.adapter.isLoaded"
         >
           <connection
-            v-if="!store.hwClient.isConnected"
+            v-if="!store.adapter.isConnected"
             @click="emit('connect')"
             title="Connect"
           />
           <connection
-            v-if="store.hwClient.isConnected"
+            v-if="store.adapter.isConnected"
             fillColor="green"
             @click="emit('disconnect');"
             title="Disconnect"

@@ -81,7 +81,7 @@ const performWriteAccess = async (data: bigInt.BigInteger) => {
   if (addrBigInt) {
     const addrInt = parseInt(addrBigInt.toString());
     const dataInt = parseInt(data.toString());
-    await store.hwClient.write(addrInt, dataInt);
+    await store.adapter.write(addrInt, dataInt);
   }
 };
 
@@ -89,7 +89,7 @@ const performReadAccess = async () => {
   const addrBigInt = props.reg.addr;
   if (addrBigInt) {
     const addrInt = parseInt(addrBigInt.toString());
-    await store.hwClient.read(addrInt);
+    await store.adapter.read(addrInt);
   }
 };
 </script>

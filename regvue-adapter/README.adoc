@@ -1,0 +1,112 @@
+= Regvue Adapter
+
+An interface for Regvue hardware adapter plugins.
+
+Hardware adapters allow Regvue to perform read and write accesses on physical hardware.
+Regvue hardware adapters must implement the Adapter interface provided by this package.
+
+== Writing A Hardware Adapter Plugin
+
+TODO: Insert npm commands for creating a library.
+
+[source,ts]
+.Recommended `vite.config.ts`
+----
+import { resolve } from "path";
+import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  build: {
+    emptyOutDir: true,
+    outDir: "dist",
+    sourcemap: true,
+    lib: {
+      entry: resolve(__dirname, "src/index.ts"),
+      name: "MyAdapter",
+      fileName: "my-adapter",
+      formats: ["cjs", "es"],
+    },
+  },
+  plugins: [dts()],
+  test: {
+    include: ["test/**/*.test.ts"],
+  },
+});
+----
+
+[source,json]
+.Recommended `package.json`
+----
+{
+  "name": "my-adapter",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/my-adapter.cjs",
+  "module": "./dist/my-adapter.js",
+  "types": "./dist/my-adapter.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/my-adapter.js",
+      "require": "./dist/my-adapter.cjs"
+    }
+  },
+  ...
+}
+----
+
+TODO: Insert npm command for adding regvue-adapter dependency.
+
+[source,ts]
+.Template `src/index.ts`
+----
+import {
+  Adapter,
+  AdapterConstructor,
+  AdapterConstructorParams,
+  AccessCallback,
+  LogCallback,
+} from "regvue-adapter";
+
+export const MyAdapter: AdapterConstructor = class MyAdapter implements Adapter {
+  name = "..."
+  description = "..."
+
+  accessCallback?: AccessCallback; // Optional
+  logCallback?: LogCallback; // Optional
+
+  constructor({accessCallback, logCallback}: AdapterConstructorParams) {
+    ...
+  }
+
+  async connect() {
+    ...
+  }
+
+  async disconnect() {
+    ...
+  }
+
+  async write(addr: number, data: number) {
+    ...
+
+    if (this.accessCallback) {
+      this.accessCallback({type: "Write", addr, data});
+    }
+  }
+
+  async read(addr: number): Promise<number> {
+    ...
+
+    if (this.accessCallback) {
+      this.accessCallback({type: "Read", addr, data});
+    }
+
+    return data;
+  }
+}
+
+// Must export "HardwareAdapter"
+export { MyAdapter as HardwareAdapter };
+----

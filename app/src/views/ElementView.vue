@@ -123,11 +123,11 @@ const toggleMenu = () => {
 };
 
 const connect = async () => {
-  await store.hwClient.connect();
+  await store.adapter.connect();
 };
 
 const disconnect = async () => {
-  await store.hwClient.disconnect();
+  await store.adapter.disconnect();
 };
 
 // Automatically hide/show the menu if the window width crosses the breakpoint

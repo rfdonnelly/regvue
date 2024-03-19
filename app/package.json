@@ -20,7 +20,7 @@
     "big-integer": "^1.6.51",
     "lunr": "^2.3.9",
     "pinia": "^2.0.28",
-    "regvue-hardware-client-interface": "file:../../webserial-uart-ts/regvue_hardware_client_interface",
+    "regvue-adapter": "file:../regvue-adapter",
     "tailwindcss": "^3.2.4",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",

@@ -78,11 +78,11 @@ router.beforeEach(async (to, from) => {
 
   if (adapter) {
     if (adapterChanged) {
-      store.hwClient.unload();
+      store.adapter.unload();
     }
 
-    if (!store.hwClient.isLoaded) {
-      await store.hwClient.load(adapter as string);
+    if (!store.adapter.isLoaded) {
+      await store.adapter.load(adapter as string);
     }
   }
 

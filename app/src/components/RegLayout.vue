@@ -173,11 +173,11 @@ watch(
 
 // Update displayed value if we receive a read response for current register
 watch(
-  () => store.lastReceivedReadResponse,
+  () => store.lastReadAccess,
   () => {
     const id = (route.params.elementId as string[]).join(".");
     const element_addr = store.elements.get(id)?.addr;
-    const response_addr = store.lastReceivedReadResponse?.addr;
+    const response_addr = store.lastReadAccess?.addr;
 
     if (response_addr && element_addr?.equals(response_addr)) {
       updateRegisterValue();
@@ -381,7 +381,7 @@ watch(
 
         <!-- Access buttons -->
         <div
-          v-if="store.hwClient.isConnected"
+          v-if="store.adapter.isConnected"
         >
           <div class="text-right text-sm text-gray-500">Access</div>
 
