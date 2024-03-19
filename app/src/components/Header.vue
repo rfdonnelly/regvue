@@ -90,13 +90,12 @@ watch(
         >
           <connection
             v-if="!store.hwClient.isConnected"
-            fillColor="green"
             @click="emit('connect')"
             title="Connect"
           />
           <connection
             v-if="store.hwClient.isConnected"
-            fillColor="red"
+            fillColor="green"
             @click="emit('disconnect');"
             title="Disconnect"
           />
