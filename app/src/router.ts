@@ -73,14 +73,17 @@ function hasQueryParam(route: RouteLocationNormalized, param: string): boolean {
 router.beforeEach(async (to, from) => {
   const store = useStore();
 
-  const adapter = from.query.adapter || to.query.adapter;
+  const adapter = to.query.adapter || from.query.adapter;
+  const adapterChanged = from.query.adapter && to.query.adapter && from.query.adapter != to.query.adapter;
 
   if (adapter) {
+    if (adapterChanged) {
+      store.hwClient.unload();
+    }
+
     if (!store.hwClient.isLoaded) {
       await store.hwClient.load(adapter as string);
     }
-  } else {
-    store.hwClient.unload();
   }
 
   // Preserve adapter query param
