@@ -6,8 +6,11 @@ import { useStore } from "src/store";
 import Search from "src/components/Search.vue";
 
 import FileReplaceOutline from "vue-material-design-icons/FileReplaceOutline.vue";
+import Connection from "vue-material-design-icons/Connection.vue";
 
-const emit = defineEmits(["toggle-menu", "show-open-modal"]);
+const emit = defineEmits([
+    "toggle-menu", "show-open-modal",
+    "connect", "disconnect"]);
 
 const store = useStore();
 const route = useRoute();
@@ -80,6 +83,21 @@ watch(
             id="show-open-modal-button"
             class="text-gray-600"
             title="Open a new design file"
+          />
+        </button>
+        <button
+          v-if="store.adapter.isLoaded"
+        >
+          <connection
+            v-if="!store.adapter.isConnected"
+            @click="emit('connect')"
+            title="Connect"
+          />
+          <connection
+            v-if="store.adapter.isConnected"
+            fillColor="green"
+            @click="emit('disconnect');"
+            title="Disconnect"
           />
         </button>
       </div>

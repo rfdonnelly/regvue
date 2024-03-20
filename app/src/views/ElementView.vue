@@ -122,6 +122,14 @@ const toggleMenu = () => {
   }
 };
 
+const connect = async () => {
+  await store.adapter.connect();
+};
+
+const disconnect = async () => {
+  await store.adapter.disconnect();
+};
+
 // Automatically hide/show the menu if the window width crosses the breakpoint
 watch(
   () => windowWidth.value,
@@ -149,6 +157,8 @@ watch(
     class="h-11"
     @show-open-modal="showOpenModal = true"
     @toggle-menu="toggleMenu()"
+    @connect="connect()"
+    @disconnect="disconnect()"
   />
 
   <OpenModal v-if="showOpenModal" @hide-open-modal="showOpenModal = false" />

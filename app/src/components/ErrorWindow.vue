@@ -19,21 +19,35 @@ const errorsToIgnore = [
 ];
 
 // Capture when an error occurs and populate variables with it
-const catchError = (event: string | Event, error: Error | undefined) => {
-  if (!errorsToIgnore.some((error) => event.toString().includes(error))) {
-    showErrorWindow.value = true;
-    errorMessage.value = event.toString();
-    url.value = window.location.toString();
-    stackTrace.value = error?.stack || "";
-  }
+const reportError = (event: string | Event, error: Error | undefined) => {
+  showErrorWindow.value = true;
+  errorMessage.value = event.toString();
+  url.value = window.location.toString();
+  stackTrace.value = error?.stack || "";
+};
+
+const isIgnoredError = (
+  event: Event | string,
+): boolean => {
+  return errorsToIgnore.some((message) => event.toString().includes(message));
 };
 
 // Catch synchronous errors
-window.onerror = (event, _source, _lineno, _number, error) =>
-  catchError(event, error);
+window.onerror = (
+  event: Event | string,
+  _source?: string,
+  _lineno?: number,
+  _colno?: number,
+  error?: Error
+) => {
+  if (!isIgnoredError(event)) {
+    reportError(event, error);
+  }
+};
 
 // Catch async errors
-window.onunhandledrejection = (event) => catchError(event.reason, event.reason);
+window.onunhandledrejection = (event: PromiseRejectionEvent) =>
+  reportError(event.reason, event.reason);
 </script>
 
 <template>

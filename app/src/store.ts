@@ -15,6 +15,10 @@ import {
   validateSemantics,
   validateResponse,
 } from "src/validate";
+import {
+  HardwareAdapterManager,
+  ReadAccess,
+} from "src/hardware-adapter-manager";
 
 const DEFAULT_DATA_WIDTH = 32;
 const DEFAULT_DEFAULT_RESET = "Default";
@@ -50,6 +54,9 @@ export const useStore = defineStore("store", {
       // Persist any load errors during routing
       // Clear on load, set on load error
       loadError: null as string | null,
+
+      adapter: new HardwareAdapterManager(),
+      lastReadAccess: null as ReadAccess | null,
     };
   },
   actions: {
@@ -140,6 +147,18 @@ export const useStore = defineStore("store", {
       this.loaded = true;
       this.root = data.root;
       this.url = url;
+    },
+
+
+    findRegByAddr (
+      bigAddr: bigInt.BigInteger,
+    ): DesignElement | undefined {
+      for (const element of this.elements.values()) {
+        if (element.type == "reg" && element?.addr?.equals(bigAddr)) {
+          return element;
+        }
+      }
+      return undefined;
     },
   },
 });
